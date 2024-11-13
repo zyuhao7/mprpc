@@ -1,0 +1,1 @@
+/opt/rh/devtoolset-7/root/usr/bin/c++ -fPIC -g -shared -Wl,-soname,libmprpc.so -o /home/myh/mprpc/lib/libmprpc.so CMakeFiles/mprpc.dir/mprpcapplication.cc.o CMakeFiles/mprpc.dir/rpcprovider.cc.o 
