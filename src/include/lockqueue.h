@@ -19,7 +19,7 @@ public:
 
     T Pop()
     {
-        std::shared_ptr<std::mutex> lock(m_mtx);
+        std::unique_ptr<std::mutex> lock(m_mtx);
         while (m_q.empty())
         {
             // 日志队列为空, 线程进入 wait
