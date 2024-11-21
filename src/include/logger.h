@@ -10,7 +10,7 @@
         logger.SetLogLevel(INFO);                       \
         char c[1024] = {0};                             \
         snprintf(c, 1024, logmsgformat, ##__VA_ARGS__); \
-        logger.Loc(c);                                  \
+        logger.Log(c);                                  \
     } while (0)
 
 #define LOG_ERR(logmsgformat, ...)                      \
@@ -20,7 +20,7 @@
         logger.SetLogLevel(ERROR);                      \
         char c[1024] = {0};                             \
         snprintf(c, 1024, logmsgformat, ##__VA_ARGS__); \
-        logger.Loc(c);                                  \
+        logger.Log(c);                                  \
     } while (0)
 
 // 定义日志级别
