@@ -46,7 +46,7 @@ void ZKClient::Start()
     m_zhandle = zookeeper_init(connstr.c_str(), global_watcher, 30000, nullptr, nullptr, 0);
     if (nullptr == m_zhandle)
     {
-        std::cout << "zookeeper_init error!" < std::endl;
+        std::cout << "zookeeper_init error!" << std::endl;
         exit(EXIT_FAILURE);
     }
     sem_t sem;
