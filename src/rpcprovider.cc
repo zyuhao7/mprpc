@@ -152,15 +152,28 @@ void RpcProvider::OnMessage(const muduo::net::TcpConnectionPtr &conn, muduo::net
     google::protobuf::Message *response = service->GetResponsePrototype(method).New();
 
     // 为 CallMethod 提供 Closure的回调函数
-    // google::protobuf::NewCallback cb(std::bind(&RpcProvider::SendRpcResponse, this, std::placeholders::_1, std::placeholders::_2));
+    google::protobuf::Closure *done =
+        google::protobuf::NewCallback<RpcProvider, const muduo::net::TcpConnectionPtr &, google::protobuf::Message *>(this, &RpcProvider::SendRpcResponse, conn, response);
 
     // 在框架上根据远端 rpc 请求, 调用当前 rpc节点上发布方法
     // new UserService().Login(controller, request, response, done)
 
-    service->CallMethod(method, nullptr, request, response, nullptr);
+    service->CallMethod(method, nullptr, request, response, done);
 }
 
-// Closure的回调函数, 用户序列化 rpc响应和网络发送
-void RpcProvider::SendRpcResponse(const muduo::net::TcpConnectionPtr &, google::protobuf::Message *)
+// Closure 的回调函数, 用户序列化 rpc 响应和网络发送
+void RpcProvider::SendRpcResponse(const muduo::net::TcpConnectionPtr &conn, google::protobuf::Message *response)
 {
+    std::string response_str;
+    if (response->SerializeToString(&response_str)) // 序列化响应
+    {
+        // 序列化成功后,通过网络把 rpc方法执行的结果发送回rpc的调用方
+        conn->send(response_str);
+        conn->shutdown(); // 模拟 http的短连接服务, 又服务端主动断开
+    }
+    else
+    {
+        std::cout << "serilize response_str error!" << std::endl;
+    }
+    conn->shutdown(); // 模拟 http的短连接服务, 又服务端主动断开
 }
