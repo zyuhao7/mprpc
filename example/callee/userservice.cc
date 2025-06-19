@@ -34,7 +34,6 @@ class UserService : public UserServiceRpc // rpc 服务发布方
 
         // 业务
         bool ret = Login(name, pwd);
-
         response->set_success(ret);
         // 写响应
         fixbug::ResultCode *code = response->mutable_reuslt();
