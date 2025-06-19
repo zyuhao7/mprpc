@@ -104,10 +104,10 @@ void MprpcChannel::CallMethod(const google::protobuf::MethodDescriptor *method,
         return;
     }
     // 反序列化 rpc调用的响应数据
-    std::string resp(recv_buf, 0, recv_size); // bug/ 当 recv_buf 有 \0 导致后面字符串被分割了.
+    // std::string resp(recv_buf, 0, recv_size); // bug/ 当 recv_buf 有 \0 导致后面字符串被分割了.
     if (response->ParseFromArray(recv_buf, recv_size))
     {
-        std::cout << "parse error! resp: " << resp << std::endl;
+        std::cout << "parse error! resp: " << recv_buf << std::endl;
         close(clientFd);
         return;
     }
