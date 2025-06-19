@@ -34,11 +34,19 @@ class UserService : public UserServiceRpc // rpc 服务发布方
 
         // 业务
         bool ret = Login(name, pwd);
+<<<<<<< HEAD
         response->set_success(ret);
         // 写响应
         fixbug::ResultCode *code = response->mutable_reuslt();
         code->set_errcode(1);
         code->set_errmsg("hello");
+=======
+
+        // 写响应
+        fixbug::ResultCode *code = response->mutable_reuslt();
+        code->set_errcode(0);
+        code->set_errmsg("");
+>>>>>>> 8170434c6362341f843761445e7c35deeb0c709c
 
         // 回传客户端
         done->Run();
