@@ -76,8 +76,9 @@ void MprpcChannel::CallMethod(const google::protobuf::MethodDescriptor *method,
     uint16_t port = atoi(MprpcApplication::GetInstance().GetConfig().Load("rpcserverport").c_str());
 
     struct sockaddr_in server_addr;
+
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = port;
+    server_addr.sin_port = htons(port);
     server_addr.sin_addr.s_addr = inet_addr(ip.c_str());
 
     // 连接 rpc 服务节点
