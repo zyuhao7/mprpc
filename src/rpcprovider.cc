@@ -2,6 +2,12 @@
 #include "mprpcapplication.h"
 #include "rpcheader.pb.h"
 #include "logger.h"
+#include "zookeeperutil.h"
+#include <functional>
+#include <string>
+#include <google/protobuf/descriptor.h>
+#include <memory> // 引入 shared_ptr
+
 /*
  service_name => service 描述
                           =》 service* 记录服务对象
@@ -13,25 +19,33 @@ void RpcProvider::NotifyService(google::protobuf::Service *service)
 
     // 获取服务的描述信息
     const google::protobuf::ServiceDescriptor *pd = service->GetDescriptor();
-
     // 获取服务的名字
     std::string service_name = pd->name();
-
     // 获取服务对象 service的方法数量
     int methodCnt = pd->method_count();
 
-    LOG_INFO("service_name: %s", service_name.c_str());
     for (int i = 0; i < methodCnt; ++i)
     {
         // 获取了服务对象指定下标的服务方法的描述
         const google::protobuf::MethodDescriptor *pmd = pd->method(i);
         std::string method_name = pmd->name();
-        LOG_INFO("method_name: %s", method_name.c_str());
         service_info.m_methodMap.insert({method_name, pmd});
     }
     service_info.m_service = service;
     m_serviceMap.insert({service_name, service_info});
-}
+
+    // 输出 m_serviceMap 的内容
+    std::cout << "Current service map contents:" << std::endl;
+    for (const auto &entry : m_serviceMap)
+    {
+        LOG_INFO("service_name:%s", entry.first.c_str());
+
+        for (const auto &method_entry : entry.second.m_methodMap)
+        {
+            LOG_INFO("method_name :%s", method_entry.first.c_str());
+        }
+    }
+};
 
 void RpcProvider::Run()
 {
@@ -49,6 +63,27 @@ void RpcProvider::Run()
     // 设置muduo库的线程数量
     srv.setThreadNum(4);
 
+    // 把当前 rpc 节点要发布的服务全部注册到 zk 上面, 让 rpc client 可以从 zk 上发现服务
+    // session timeout 30s zkclient 网络I/O 线程 1/3 * timeout 时间发送 ping消息
+    ZKClient zkCli;
+    zkCli.Start();
+    // service_name 为永久性节点 method_name 为临时性节点
+    for (auto &sp : m_serviceMap)
+    {
+        // /service_name /UserServiceRpc
+        std::string service_path = "/" + sp.first;
+        zkCli.Create(service_path.c_str(), nullptr, 0);
+        for (auto &mp : sp.second.m_methodMap)
+        {
+            std::string method_path = service_path + "/" + mp.first;
+            char method_path_data[128] = {0};
+            sprintf(method_path_data, "%s:%d", ip.c_str(), port);
+            // ZOO_EPHEMERAL 表示znodoe是一个临时节点
+            zkCli.Create(method_path.c_str(), method_path_data, strlen(method_path_data), ZOO_EPHEMERAL);
+        }
+    }
+
+    // rpc 服务端准备启动
     std::cout << "RpcProvider start service at ip : " << ip << "port: " << port << std::endl;
     srv.start();
     m_eventLoop.loop();
