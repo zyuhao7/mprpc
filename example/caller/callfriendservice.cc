@@ -2,6 +2,7 @@
 #include "mprpcapplication.h"
 #include "mprpcchannel.h"
 #include "friend.pb.h"
+#include "mprpccontroller.h"
 int main(int argc, char **argv)
 {
     // 程序启动, 若需要调用 mprpc框架的 rpc服务, 初始化框架.
@@ -14,7 +15,8 @@ int main(int argc, char **argv)
 
     fixbug::GetFriendListsResponse resp;
     // 同步 rpc 调用过程 MprpcChannel::callmethod
-    stub.Register(nullptr, &req, &resp, nullptr);
+    MprpcController controller;
+    stub.Register(&controller, &req, &resp, nullptr);
 
     // 一次 rpc 调用完成, 读响应
     if (resp.reuslt().errcode() == 0)
