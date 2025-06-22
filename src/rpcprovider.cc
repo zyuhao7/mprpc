@@ -1,6 +1,7 @@
 #include "rpcprovider.h"
 #include "mprpcapplication.h"
 #include "rpcheader.pb.h"
+#include "logger.h"
 /*
  service_name => service 描述
                           =》 service* 记录服务对象
@@ -19,14 +20,13 @@ void RpcProvider::NotifyService(google::protobuf::Service *service)
     // 获取服务对象 service的方法数量
     int methodCnt = pd->method_count();
 
-    std::cout << "service_name: " << service_name << std::endl;
-
+    LOG_INFO("service_name: %s", service_name.c_str());
     for (int i = 0; i < methodCnt; ++i)
     {
         // 获取了服务对象指定下标的服务方法的描述
         const google::protobuf::MethodDescriptor *pmd = pd->method(i);
         std::string method_name = pmd->name();
-        std::cout << "method_name: " << method_name << std::endl;
+        LOG_INFO("method_name: %s", method_name.c_str());
         service_info.m_methodMap.insert({method_name, pmd});
     }
     service_info.m_service = service;
@@ -118,11 +118,10 @@ void RpcProvider::OnMessage(const muduo::net::TcpConnectionPtr &conn, muduo::net
 
     // 打印调试信息
     std::cout << "============================================" << std::endl;
-    std::cout << "header_size: " << header_size << std::endl;
-    std::cout << "rpc_header_str: " << rpc_header_str << std::endl;
-    std::cout << "service_name: " << service_name << std::endl;
-    std::cout << "method_name: " << method_name << std::endl;
-    std::cout << "args_str: " << args_str << std::endl;
+    LOG_INFO("header_size: %d", header_size);
+    LOG_INFO("rpc_header_str: %s", rpc_header_str.c_str());
+    LOG_INFO("service_name: %s", service_name.c_str());
+    LOG_INFO("method_name: %s", method_name.c_str());
     std::cout << "============================================" << std::endl;
 
     //  获取 service对象和method对象
@@ -167,7 +166,7 @@ void RpcProvider::SendRpcResponse(const muduo::net::TcpConnectionPtr &conn, goog
     std::string response_str;
     if (response->SerializeToString(&response_str)) // 序列化响应
     {
-        // 序列化成功后,通过网络把 rpc方法执行的结果发送回rpc的调用方
+        // 序列化成功后,通过网络把 rpc 方法执行的结果发送回rpc的调用方
         conn->send(response_str);
         conn->shutdown(); // 模拟 http的短连接服务, 又服务端主动断开
     }
