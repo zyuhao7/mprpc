@@ -3,6 +3,7 @@
 #include "friend.pb.h"
 #include "mprpcapplication.h"
 #include "rpcprovider.h"
+#include "logger.h"
 
 class FriendService : public fixbug::FriendServiceRpc
 {
@@ -40,6 +41,8 @@ public:
 
 int main(int argc, char **argv)
 {
+    LOG_ERROR("say goodbye");
+    LOG_INFO("man what can i say");
     // 框架初始化
     MprpcApplication::Init(argc, argv);
 
