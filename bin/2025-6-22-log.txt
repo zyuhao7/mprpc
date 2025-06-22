@@ -1,0 +1,9 @@
+12:38:45 => [INFO]say goodbye
+12:38:45 => [INFO]man what can i say
+12:38:45 => [INFO]service_name: FriendServiceRpc
+12:38:45 => [INFO]method_name: Register
+12:38:45 => [INFO]header_size: 30
+12:38:47 => [INFO]rpc_header_str: 
+FriendServiceRpcRegister
+12:38:47 => [INFO]service_name: FriendServiceRpc
+12:38:47 => [INFO]method_name: Register
