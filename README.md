@@ -65,7 +65,7 @@
 
 **accept + thread  -  thread-per-connection** : 比方案2开销小一点，但是并发造成线程堆积过多
 
-**muduo的设计： reactors in threads  -  one loop per thread ** : 方案的特点是 one loop per thread, 有一个 main reactor(I/O)负载 accept 连接，然后把连接分发到某个 sub reactor(Woker), 该连接的所有操作那个 sub reactor 所在的线程中完成，多个连接可能被分配到多个线程中，充分利用CPU
+**muduo的设计： reactors in threads  -  one loop per thread** : 方案的特点是 one loop per thread, 有一个 main reactor(I/O)负载 accept 连接，然后把连接分发到某个 sub reactor(Woker), 该连接的所有操作那个 sub reactor 所在的线程中完成，多个连接可能被分配到多个线程中，充分利用CPU
 
 **reactors in process  -  one loop per process**: Nginx网络器的网络模块设计，基于进程设计，采用多个Reactors充当 I/O 进程和工作进程，通过一把 accept锁，完美解决了多个 Reactors的"敬群现象"
 
