@@ -99,7 +99,7 @@ Zookeeper 是一个**分布式协调服务**，由 Apache 开源，用于解决�
 
 ### 2. Zookeeper 数据模型
 
-Zookeeper 采用**树形命名空间（ZNode）**存储数据，类似文件系统：
+Zookeeper 采用** 树形命名空间（ZNode）**存储数据，类似文件系统：
 
 ```text
 / (根节点)
